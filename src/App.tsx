@@ -114,13 +114,15 @@ export class App extends React.Component<AppProps, AppState> {
     handleAdd() {
         if (this.state.running) return;
         const frames = this.state.frames;
-        frames.push(this.emptyFrame());
-        this.setState({ frames, selectedFrame: frames.length - 1 });
+        const index = this.state.selectedFrame;
+        const newFrame = this.emptyFrame();
+        frames.splice(index, 0, newFrame);
+        this.setState({ frames, selectedFrame: index + 1 });
 
         setTimeout(() => {
             const container = ReactDom.findDOMNode(this.refs["frames"]) as HTMLDivElement;
-            const lastChild = container.childNodes[container.childNodes.length - 1] as HTMLDivElement;
-            container.scrollLeft = lastChild.offsetLeft;
+            const newChild = container.childNodes[index + 1] as HTMLDivElement;
+            container.scrollLeft = newChild.offsetLeft;
         }, 100);
     }
 

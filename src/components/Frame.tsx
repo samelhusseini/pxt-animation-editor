@@ -15,7 +15,7 @@ export interface FrameProps {
     onClick?: (index: number) => void;
     onDuplicate?: (index: number) => void;
     onDelete?: (index: number) => void;
-    onPixelClick?: (index: number, value: string) => void;
+    onPixelChange?: (index: number, value: string) => void;
 }
 
 export interface FrameState {
@@ -41,8 +41,8 @@ export class Frame extends React.Component<FrameProps, FrameState> {
 
     componentDidMount() {
         // We only want to do this for the main frame
-        const { onPixelClick } = this.props;
-        if (!onPixelClick) return;
+        const { onPixelChange } = this.props;
+        if (!onPixelChange) return;
 
         window.onresize = () => {
             this.resize();
@@ -53,7 +53,7 @@ export class Frame extends React.Component<FrameProps, FrameState> {
     resize() {
         const frame = ReactDom.findDOMNode(this.refs["frame"]);
         const canvas = frame.parentNode as HTMLDivElement;
-        const padding = 10;
+        const padding = 20;
         const height = Math.min(500, Math.max(100, Math.min(canvas.offsetHeight, canvas.offsetWidth) - (padding * 2)));
         // Match height
         const width = height;
@@ -66,8 +66,8 @@ export class Frame extends React.Component<FrameProps, FrameState> {
     }
 
     handlePixelClick(index: number, value: string) {
-        const { onPixelClick } = this.props;
-        onPixelClick(index, value);
+        const { onPixelChange } = this.props;
+        onPixelChange(index, value);
     }
 
     handleDeleteFrame(e: any) {
@@ -87,15 +87,16 @@ export class Frame extends React.Component<FrameProps, FrameState> {
     }
 
     render() {
-        const { frame, selected, running, onPixelClick } = this.props;
+        const { frame, selected, running, onPixelChange } = this.props;
         const { height, width } = this.state;
+        if (!frame) return;
 
         const layout = frame.layout;
 
         return (
             <div ref="frame" className={`frame ${selected ? 'selected' : ''}`} style={{ width, height }} onClick={this.handleClick}>
                 {layout == 'matrix' ?
-                    <MatrixFrame frame={frame} onPixelClick={onPixelClick ? this.handlePixelClick : undefined} sizeX={frame.sizeX} sizeY={frame.sizeY} />
+                    <MatrixFrame frame={frame} onPixelChange={onPixelChange ? this.handlePixelClick : undefined} sizeX={frame.sizeX} sizeY={frame.sizeY} />
                     : undefined}
                 {selected && !running ?
                     <div className='overlay'>

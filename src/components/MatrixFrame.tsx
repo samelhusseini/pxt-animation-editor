@@ -6,7 +6,7 @@ export interface MatrixFrameProps {
     frame: FrameDef;
     sizeX: number;
     sizeY: number;
-    onPixelClick?: (index: number, value: string) => void;
+    onPixelChange?: (index: number, value: string) => void;
 }
 
 export class MatrixFrame extends React.Component<MatrixFrameProps, {}> {
@@ -18,8 +18,8 @@ export class MatrixFrame extends React.Component<MatrixFrameProps, {}> {
     }
 
     pixelClick(e: any) {
-        const { frame, sizeY, onPixelClick } = this.props;
-        if (!onPixelClick) return;
+        const { frame, sizeY, onPixelChange } = this.props;
+        if (!onPixelChange) return;
 
         const target = e.target;
         const row = parseInt(target.getAttribute("data-row"));
@@ -28,7 +28,7 @@ export class MatrixFrame extends React.Component<MatrixFrameProps, {}> {
 
         const off = !frame.state[index] || frame.state[index] == '0';
 
-        onPixelClick(index, off ? '1' : '0');
+        onPixelChange(index, off ? '1' : '0');
 
         e.preventDefault();
         e.stopPropagation();

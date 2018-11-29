@@ -12,10 +12,10 @@ export class Canvas extends React.Component<CanvasProps, {}> {
     constructor(props: CanvasProps) {
         super(props);
 
-        this.handlePixelClick = this.handlePixelClick.bind(this);
+        this.handlePixelChange = this.handlePixelChange.bind(this);
     }
 
-    handlePixelClick(index: number, value: string) {
+    handlePixelChange(index: number, value: string) {
         const { frame, onUpdated } = this.props;
         frame.state[index] = value;
         if (onUpdated) onUpdated(frame.state);
@@ -26,7 +26,7 @@ export class Canvas extends React.Component<CanvasProps, {}> {
 
         return (
             <div className="canvas">
-                <Frame frame={frame} onPixelClick={this.handlePixelClick} />
+                <Frame frame={frame} onPixelChange={this.handlePixelChange} />
             </div>
         );
     }
