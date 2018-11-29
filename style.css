@@ -1,0 +1,136 @@
+body {
+    font-family: "Roboto Mono", monospace;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.MCExtension {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.App {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.canvas {
+    margin-top: 45px;
+    flex-grow: 1;
+    background-color: #F2F2F2;
+
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.canvas .frame {
+    height: 100%;
+    width: 100%;
+    background-color: blue;
+}
+
+.footer {
+    height: 120px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    background-color: #D9D9D9;
+    border-top: 1px solid #C5C5C5;
+}
+
+.frames {
+    flex-grow: 1;
+    padding: 10px;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.frames .frame {
+    height: 100px !important;
+    width: 100px !important;
+    margin-right: 10px;
+    flex: 0 0 auto;
+    cursor: pointer;
+}
+
+.frames .frame.selected {
+    box-shadow: 0 0 0 4px #2185D0;
+    background-color:#333;
+    position: relative;
+}
+
+.frames .frame .overlay {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.frames .frame .overlay .duplicate, 
+.frames .frame .overlay .delete {
+    position: absolute;
+    bottom: 0;
+    width: 50%;
+} 
+.frames .frame .overlay .duplicate {
+    left: 0;
+}
+.frames .frame .overlay .delete {
+    right: 0;
+}
+
+.play-pause, .add-frame {
+    width: 100px;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.play-pause {
+    border-right: 1px solid #C5C5C5;
+}
+.add-frame {
+    border-left: 1px solid #C5C5C5;
+}
+
+.matrix {
+    display: table;
+    height: 100%;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 8px;
+    background-color: black;
+}
+
+.frames .matrix {
+    border-spacing: 3px;
+}
+
+.matrix .pixel-row {
+    display: table-row;
+}
+
+.matrix .pixel {
+    display: table-cell;
+    background-color: #1D90FF;
+}
+
+.matrix .pixel.on {
+    background-color: white;
+}
+
+.canvas .matrix .pixel {
+    cursor: pointer;
+}
