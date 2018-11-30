@@ -2,7 +2,9 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Menu, Button } from 'semantic-ui-react'
-import Slider, { Range } from 'rc-slider';
+import Slider from 'rc-slider';
+
+import { PXTClient } from './lib/pxtextensions';
 
 import { Canvas } from './components/Canvas';
 import { Frames } from './components/Frames';
@@ -15,10 +17,12 @@ export interface AppState {
 }
 
 export interface AppProps {
+    client: PXTClient;
     layout?: LayoutTypes;
     size?: number;
     sizeX?: number;
     sizeY?: number;
+    backgroundColor?: string;
 }
 
 export interface FrameDef {
@@ -35,7 +39,7 @@ export class App extends React.Component<AppProps, AppState> {
 
     private timerId: any;
 
-    constructor(props: {}) {
+    constructor(props: AppProps) {
         super(props);
 
         this.state = this.getInitialState();
@@ -49,6 +53,21 @@ export class App extends React.Component<AppProps, AppState> {
         this.handleFrameDuplicated = this.handleFrameDuplicated.bind(this);
         this.handleFrameUpdated = this.handleFrameUpdated.bind(this);
         this.handleDelayChanged = this.handleDelayChanged.bind(this);
+
+        this.handleReadResponse = this.handleReadResponse.bind(this);
+        this.handleHidden = this.handleHidden.bind(this);
+
+        props.client.on('read', this.handleReadResponse);
+        props.client.on('hidden', this.handleHidden);
+
+    }
+
+    private handleReadResponse() {
+
+    }
+
+    private handleHidden() {
+
     }
 
     private getInitialState() {
@@ -116,7 +135,7 @@ export class App extends React.Component<AppProps, AppState> {
         const frames = this.state.frames;
         const index = this.state.selectedFrame;
         const newFrame = this.emptyFrame();
-        frames.splice(index, 0, newFrame);
+        frames.splice(index + 1, 0, newFrame);
         this.setState({ frames, selectedFrame: index + 1 });
 
         setTimeout(() => {
@@ -144,7 +163,11 @@ export class App extends React.Component<AppProps, AppState> {
     handleFrameDeleted(index: number) {
         const frames = this.state.frames;
         frames.splice(index, 1);
-        this.setState({ frames });
+        if (frames.length == 0) {
+            const newFrame = this.emptyFrame();
+            frames.push(newFrame);
+        }
+        this.setState({ frames, selectedFrame: this.state.selectedFrame ? this.state.selectedFrame - 1 : 0 });
     }
 
     handleFrameUpdated(state: { [key: number]: string; }) {
@@ -158,12 +181,13 @@ export class App extends React.Component<AppProps, AppState> {
     }
 
     render() {
+        const { backgroundColor } = this.props;
         const { running, delay, frames, selectedFrame } = this.state;
 
         const frame = frames[selectedFrame];
 
         return (
-            <div className="App">
+            <div className="App" style={{ backgroundColor: backgroundColor }}>
                 <Menu fixed="top" borderless>
                     <Menu.Menu position='left'>
                         <Menu.Item>

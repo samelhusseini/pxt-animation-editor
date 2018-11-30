@@ -6,6 +6,7 @@ import { Button } from 'semantic-ui-react'
 import { FrameDef } from "../App";
 
 import { MatrixFrame } from "./MatrixFrame";
+import { RingFrame } from "./RingFrame";
 
 export interface FrameProps {
     frame: FrameDef;
@@ -19,8 +20,8 @@ export interface FrameProps {
 }
 
 export interface FrameState {
-    width?: string;
-    height?: string;
+    width?: number;
+    height?: number;
 }
 
 export class Frame extends React.Component<FrameProps, FrameState> {
@@ -29,14 +30,15 @@ export class Frame extends React.Component<FrameProps, FrameState> {
         super(props);
 
         this.state = {
-            width: '200px',
-            height: '200px'
+            width: 200,
+            height: 200
         }
 
         this.handleClick = this.handleClick.bind(this);
         this.handleDeleteFrame = this.handleDeleteFrame.bind(this);
         this.handleDuplicateFrame = this.handleDuplicateFrame.bind(this);
         this.handlePixelClick = this.handlePixelClick.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     componentDidMount() {
@@ -48,6 +50,23 @@ export class Frame extends React.Component<FrameProps, FrameState> {
             this.resize();
         }
         this.resize();
+
+        // Handle window keys
+    }
+
+    handleKeyDown(e: React.KeyboardEvent<any>) {
+        const charCode = (typeof e.which == "number") ? e.which : e.keyCode;
+        const { onPixelChange, selected } = this.props;
+        if (!onPixelChange || !selected) return;
+
+        if (charCode === 8 /* Back space */) {
+            console.log('backspace... ');
+            const { index, onDelete } = this.props;
+            if (onDelete) onDelete(index);
+
+            e.preventDefault();
+            e.stopPropagation();
+        }
     }
 
     resize() {
@@ -57,7 +76,7 @@ export class Frame extends React.Component<FrameProps, FrameState> {
         const height = Math.min(500, Math.max(100, Math.min(canvas.offsetHeight, canvas.offsetWidth) - (padding * 2)));
         // Match height
         const width = height;
-        this.setState({ width: `${width}px`, height: `${height}px` })
+        this.setState({ width, height })
     }
 
     handleClick() {
@@ -71,6 +90,7 @@ export class Frame extends React.Component<FrameProps, FrameState> {
     }
 
     handleDeleteFrame(e: any) {
+        console.log('handleDeleteFrame');
         const { index, onDelete } = this.props;
         if (onDelete) onDelete(index);
 
@@ -89,14 +109,18 @@ export class Frame extends React.Component<FrameProps, FrameState> {
     render() {
         const { frame, selected, running, onPixelChange } = this.props;
         const { height, width } = this.state;
-        if (!frame) return;
+        if (!frame) return <div />;
 
         const layout = frame.layout;
 
         return (
-            <div ref="frame" className={`frame ${selected ? 'selected' : ''}`} style={{ width, height }} onClick={this.handleClick}>
+            <div ref="frame" role="button" tabIndex={0} className={`frame ${selected ? 'selected' : ''}`} style={{ width: `${width}px`, height: `${height}px` }}
+                onClick={this.handleClick} onKeyDown={this.handleKeyDown}>
                 {layout == 'matrix' ?
                     <MatrixFrame frame={frame} onPixelChange={onPixelChange ? this.handlePixelClick : undefined} sizeX={frame.sizeX} sizeY={frame.sizeY} />
+                    : undefined}
+                {layout == 'ring' ?
+                    <RingFrame frame={frame} onPixelChange={onPixelChange ? this.handlePixelClick : undefined} size={frame.size} radius={height / 2} />
                     : undefined}
                 {selected && !running ?
                     <div className='overlay'>

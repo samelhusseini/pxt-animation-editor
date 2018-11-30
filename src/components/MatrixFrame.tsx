@@ -41,7 +41,7 @@ export class MatrixFrame extends React.Component<MatrixFrameProps, {}> {
         for (let i = 0; i < sizeX; i++) {
             const cols: JSX.Element[] = [];
             for (let j = 0; j < sizeY; j++) {
-                cols.push(<div className={`pixel ${frame.state[(i * sizeY) + j] == '1' ? 'on' : ''}`} data-row={i} data-col={j} onClick={this.pixelClick}></div>);
+                cols.push(<div role="button" className={`pixel ${frame.state[(i * sizeY) + j] == '1' ? 'on' : ''}`} data-row={i} data-col={j} onClick={this.pixelClick}></div>);
             }
             rows.push(<div className="pixel-row">{cols}</div>)
         }

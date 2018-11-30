@@ -1,18 +1,15 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { AppContainer } from 'react-hot-loader';
-import { MCExtension } from './MCExtension';
+import { PXTExtension } from './PXTExtension';
 
 declare let module: any
 
 ReactDOM.render(
-    <AppContainer>
-        <MCExtension />
-    </AppContainer>,
+    <PXTExtension />,
     document.getElementById('root') as HTMLElement
 );
 
 if (module.hot) {
     module.hot.accept();
-} 
+}

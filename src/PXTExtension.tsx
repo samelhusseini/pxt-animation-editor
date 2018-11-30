@@ -1,6 +1,9 @@
+/// <reference path="./lib/pxtextensions.ts" />
 
 import * as React from 'react';
 import { App, LayoutTypes } from './App';
+
+import { pxt, PXTClient } from "./lib/pxtextensions";
 
 export interface AppState {
     target?: string;
@@ -9,7 +12,9 @@ export interface AppState {
 
 declare let window: any;
 
-export class MCExtension extends React.Component<{}, AppState> {
+export class PXTExtension extends React.Component<{}, AppState> {
+
+    private client: PXTClient;
 
     constructor(props: {}) {
         super(props);
@@ -18,6 +23,10 @@ export class MCExtension extends React.Component<{}, AppState> {
             target: this.getDefaultTarget(),
             isSupported: this.isSupported()
         }
+
+        this.client = new PXTClient();
+        pxt.extensions.setup(this.client);
+        pxt.extensions.init();
     }
 
     private isSupported() {
@@ -30,7 +39,7 @@ export class MCExtension extends React.Component<{}, AppState> {
             const url = new URL(window.location.href);
             let chosen = url.searchParams.get("target");
             if (chosen) return chosen.toLowerCase();
-            return "microbit"
+            return "adafruit"
         }
         return undefined;
     }
@@ -44,24 +53,17 @@ export class MCExtension extends React.Component<{}, AppState> {
     }
 
     componentDidMount() {
-        window.addEventListener("message", (ev: any) => {
-            var resp = ev.data;
-            if (!resp) return;
+        if (!pxt.extensions.inIframe()) return;
 
-            if (resp.type === "pxtpkgext")
-                this.handleMakeCodeResponse(resp);
-        }, false);
-    }
+        this.client.on('loaded', (target: string) => {
+            this.setState({ target });
+            pxt.extensions.read();
+        })
 
-    handleMakeCodeResponse = (resp: any) => {
-        console.log(resp);
-        const target = resp.target;
-        switch (resp.event) {
-            case "extloaded":
-                // Loaded, set the target
-                this.setState({ target })
-                break;
-        }
+        this.client.on('shown', (target: string) => {
+            this.setState({ target });
+            pxt.extensions.read();
+        })
     }
 
     render() {
@@ -71,6 +73,7 @@ export class MCExtension extends React.Component<{}, AppState> {
         let size: number;
         let sizeX: number;
         let sizeY: number;
+        let backgroundColor = "#F2F2F2";
         switch (target) {
             case 'microbit':
                 layout = 'matrix';
@@ -80,6 +83,7 @@ export class MCExtension extends React.Component<{}, AppState> {
             case 'adafruit':
                 layout = 'ring';
                 size = 10;
+                backgroundColor = "#0183B7";
                 break;
         }
 
@@ -87,7 +91,7 @@ export class MCExtension extends React.Component<{}, AppState> {
             <div className={`MCExtension ${!target ? 'dimmable dimmed' : ''}`}>
                 {!isSupported ? <div>
                     This extension is not supported on your browser
-                </div> : <App layout={layout} size={size} sizeX={sizeX} sizeY={sizeY}/>}
+                </div> : <App client={this.client} layout={layout} size={size} sizeX={sizeX} sizeY={sizeY} backgroundColor={backgroundColor} />}
             </div>
         );
     }

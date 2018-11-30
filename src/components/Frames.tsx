@@ -43,7 +43,7 @@ export class Frames extends React.Component<FramesProps, {}> {
         return (
             <div className="frames">
                 {frames.map((frame, index) =>
-                    <Frame frame={frame} selected={selected == index} running={running} index={index} onClick={this.handleFrameClick}
+                    <Frame key={`frame${index}`} frame={frame} selected={selected == index} running={running} index={index} onClick={this.handleFrameClick}
                         onDelete={this.handleFrameDeleted} onDuplicate={this.handleFrameDuplicate} />
                 )}
             </div>
