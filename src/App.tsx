@@ -134,7 +134,7 @@ export class App extends React.Component<AppProps, AppState> {
         if (this.state.running) return;
         const frames = this.state.frames;
         const index = this.state.selectedFrame;
-        const newFrame = this.emptyFrame();
+        const newFrame = JSON.parse(JSON.stringify(frames[index]));
         frames.splice(index + 1, 0, newFrame);
         this.setState({ frames, selectedFrame: index + 1 });
 
