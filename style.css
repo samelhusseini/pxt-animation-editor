@@ -25,7 +25,6 @@ body {
 .canvas {
     margin-top: 45px;
     flex-grow: 1;
-    background-color: #F2F2F2;
 
     width: 100%;
     display: flex;
@@ -36,7 +35,6 @@ body {
 .canvas .frame {
     height: 100%;
     width: 100%;
-    background-color: blue;
 }
 
 .footer {
@@ -133,4 +131,9 @@ body {
 
 .canvas .matrix .pixel {
     cursor: pointer;
+}
+
+
+.ring .backing {
+    fill: white;
 }
