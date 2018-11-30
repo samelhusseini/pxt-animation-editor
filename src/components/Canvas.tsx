@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { FrameDef } from "../App";
 import { Frame } from "./Frame";
 
 export interface CanvasProps {

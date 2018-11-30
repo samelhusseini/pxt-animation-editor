@@ -1,7 +1,7 @@
-/// <reference path="./lib/pxtextensions.ts" />
+/// <reference path="./typings/animation-editor.d.ts" />
 
 import * as React from 'react';
-import { App, LayoutTypes } from './App';
+import { App } from './App';
 
 import { pxt, PXTClient } from "./lib/pxtextensions";
 
@@ -91,7 +91,7 @@ export class PXTExtension extends React.Component<{}, AppState> {
             <div className={`MCExtension ${!target ? 'dimmable dimmed' : ''}`}>
                 {!isSupported ? <div>
                     This extension is not supported on your browser
-                </div> : <App client={this.client} layout={layout} size={size} sizeX={sizeX} sizeY={sizeY} backgroundColor={backgroundColor} />}
+                </div> : <App client={this.client} target={target} layout={layout} size={size} sizeX={sizeX} sizeY={sizeY} backgroundColor={backgroundColor} />}
             </div>
         );
     }

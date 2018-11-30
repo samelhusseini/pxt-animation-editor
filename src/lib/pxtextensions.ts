@@ -1,6 +1,15 @@
+
 import * as EventEmitter from 'eventemitter3';
 
 export namespace pxt.extensions {
+
+    export interface ReadResponse {
+        asm?: string;
+        code?: string;
+        json?: string;
+        jres?: string;
+    }
+
 
     export function inIframe() {
         try {

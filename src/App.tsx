@@ -1,15 +1,19 @@
+/// <reference path="./typings/animation-editor.d.ts" />
 
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Menu, Button } from 'semantic-ui-react'
 import Slider from 'rc-slider';
 
-import { PXTClient } from './lib/pxtextensions';
+import { pxt, PXTClient } from './lib/pxtextensions';
 
 import { Canvas } from './components/Canvas';
 import { Frames } from './components/Frames';
 
+import { EmitterFactory } from "./exporter/factory";
+
 export interface AppState {
+    target: string;
     frames?: FrameDef[];
     running?: boolean;
     delay?: number;
@@ -18,22 +22,13 @@ export interface AppState {
 
 export interface AppProps {
     client: PXTClient;
+    target: string;
     layout?: LayoutTypes;
     size?: number;
     sizeX?: number;
     sizeY?: number;
     backgroundColor?: string;
 }
-
-export interface FrameDef {
-    layout: LayoutTypes;
-    size?: number;
-    sizeX?: number;
-    sizeY?: number;
-    state?: { [key: number]: string; };
-}
-
-export type LayoutTypes = 'matrix' | 'strip' | 'ring';
 
 export class App extends React.Component<AppProps, AppState> {
 
@@ -42,7 +37,7 @@ export class App extends React.Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props);
 
-        this.state = this.getInitialState();
+        this.state = this.getInitialState(props);
 
         this.handleSave = this.handleSave.bind(this);
         this.handleStartOver = this.handleStartOver.bind(this);
@@ -59,19 +54,28 @@ export class App extends React.Component<AppProps, AppState> {
 
         props.client.on('read', this.handleReadResponse);
         props.client.on('hidden', this.handleHidden);
-
     }
 
-    private handleReadResponse() {
+    private handleReadResponse(resp: pxt.extensions.ReadResponse) {
 
     }
 
     private handleHidden() {
-
+        const { frames, target } = this.state;
+        if (frames && frames.length > 0) {
+            const emitter = EmitterFactory.getEmitter(target);
+            if (emitter) {
+                const output = emitter.output(frames);
+                pxt.extensions.write(output, JSON.stringify(frames));
+            }
+        } else {
+            pxt.extensions.write(' ', ' ');
+        }
     }
 
-    private getInitialState() {
+    private getInitialState(props: AppProps) {
         return {
+            target: props.target,
             frames: [this.emptyFrame()],
             running: false,
             delay: 400,
@@ -122,7 +126,7 @@ export class App extends React.Component<AppProps, AppState> {
         // reset everything
         let conf = window.confirm('Are you sure you want to clear this animation');
         if (conf) {
-            this.setState(this.getInitialState());
+            this.setState(this.getInitialState(this.props));
         }
     }
 

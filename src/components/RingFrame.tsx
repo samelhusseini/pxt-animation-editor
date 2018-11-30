@@ -1,7 +1,5 @@
 import * as React from 'react';
 
-import { FrameDef } from "../App";
-
 export interface RingFrameProps {
     frame: FrameDef;
     size: number;

@@ -3,8 +3,6 @@ import * as ReactDom from 'react-dom';
 
 import { Button } from 'semantic-ui-react'
 
-import { FrameDef } from "../App";
-
 import { MatrixFrame } from "./MatrixFrame";
 import { RingFrame } from "./RingFrame";
 
