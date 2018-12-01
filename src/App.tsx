@@ -12,14 +12,6 @@ import { Frames } from './components/Frames';
 
 import { EmitterFactory } from "./exporter/factory";
 
-export interface AppState {
-    target: string;
-    frames?: FrameDef[];
-    running?: boolean;
-    delay?: number;
-    selectedFrame?: number;
-}
-
 export interface AppProps {
     client: PXTClient;
     target: string;
@@ -28,6 +20,14 @@ export interface AppProps {
     sizeX?: number;
     sizeY?: number;
     backgroundColor?: string;
+}
+
+export interface AppState {
+    target: string;
+    frames?: FrameDef[];
+    running?: boolean;
+    delay?: number;
+    selectedFrame?: number;
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -49,27 +49,38 @@ export class App extends React.Component<AppProps, AppState> {
         this.handleFrameUpdated = this.handleFrameUpdated.bind(this);
         this.handleDelayChanged = this.handleDelayChanged.bind(this);
 
-        this.handleReadResponse = this.handleReadResponse.bind(this);
-        this.handleHidden = this.handleHidden.bind(this);
+        this.deserialize = this.deserialize.bind(this);
+        this.serialize = this.serialize.bind(this);
 
-        props.client.on('read', this.handleReadResponse);
-        props.client.on('hidden', this.handleHidden);
+        props.client.on('read', this.deserialize);
+        props.client.on('hidden', this.serialize);
     }
 
-    private handleReadResponse(resp: pxt.extensions.ReadResponse) {
-
+    private deserialize(resp: pxt.extensions.ReadResponse) {
+        if (resp && resp.json && resp.json.length > 0) {
+            const json = JSON.parse(resp.json);
+            console.log('reading json:', json);
+            this.setState({ frames: json, selectedFrame: 0 });
+        }
     }
 
-    private handleHidden() {
-        const { frames, target } = this.state;
+    private serialize() {
+        const { frames } = this.state;
+        if (frames && frames.length > 0) {
+            this.export();
+        } else {
+            pxt.extensions.write(' ', ' ');
+        }
+    }
+
+    private export() {
+        const { frames, target, delay } = this.state;
         if (frames && frames.length > 0) {
             const emitter = EmitterFactory.getEmitter(target);
             if (emitter) {
-                const output = emitter.output(frames);
+                const output = emitter.output(frames, delay);
                 pxt.extensions.write(output, JSON.stringify(frames));
             }
-        } else {
-            pxt.extensions.write(' ', ' ');
         }
     }
 
@@ -131,7 +142,7 @@ export class App extends React.Component<AppProps, AppState> {
     }
 
     handleSave() {
-        // TODO: save and export, ie: go back to the editor
+        this.export();
     }
 
     handleAdd() {
@@ -208,11 +219,11 @@ export class App extends React.Component<AppProps, AppState> {
                         <Slider value={delay} onChange={this.handleDelayChanged} min={10} max={1000} step={10} />
                     </Menu.Item>
 
-                    <Menu.Menu position='right'>
+                    {!pxt.extensions.inIframe() ? <Menu.Menu position='right'>
                         <Menu.Item name='save' onClick={this.handleSave}>
                             Save
                         </Menu.Item>
-                    </Menu.Menu>
+                    </Menu.Menu> : undefined}
                 </Menu>
 
                 <Canvas frame={frame} onUpdated={this.handleFrameUpdated} />

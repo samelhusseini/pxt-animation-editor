@@ -35,35 +35,29 @@ export class PXTExtension extends React.Component<{}, AppState> {
     }
 
     private getDefaultTarget() {
-        if (!this.isIFrame()) {
+        if (!pxt.extensions.inIframe()) {
             const url = new URL(window.location.href);
             let chosen = url.searchParams.get("target");
             if (chosen) return chosen.toLowerCase();
-            return "adafruit"
+            return "microbit"
         }
         return undefined;
     }
 
-    private isIFrame() {
-        try {
-            return window && window.self !== window.top;
-        } catch (e) {
-            return true;
-        }
-    }
-
     componentDidMount() {
-        if (!pxt.extensions.inIframe()) return;
-
         this.client.on('loaded', (target: string) => {
             this.setState({ target });
-            pxt.extensions.read();
+            pxt.extensions.read(this.client);
         })
 
         this.client.on('shown', (target: string) => {
             this.setState({ target });
-            pxt.extensions.read();
+            pxt.extensions.read(this.client);
         })
+
+        if (!pxt.extensions.inIframe()) {
+            this.client.emit('loaded', this.getDefaultTarget());
+        }
     }
 
     render() {

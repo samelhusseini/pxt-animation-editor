@@ -8,7 +8,7 @@ module.exports = {
         app: ["./src/index.tsx"],
     },
     output: {
-        path: path.resolve(__dirname, 'docs'),
+        path: path.resolve(__dirname, 'dist'),
         filename: 'js/[name].bundle.js'
     },
 
@@ -31,6 +31,10 @@ module.exports = {
         new HtmlWebpackPlugin({
             inject: false,
             hash: false,
+            semanticUIPath: '//cdn.jsdelivr.net/npm/semantic-ui@2.4.0/dist/',
+            reactSliderPath: '//cdn.jsdelivr.net/npm/rc-slider@8.6.3/',
+            reactPath: 'https://unpkg.com/react@16/',
+            reactDomPath: 'https://unpkg.com/react-dom@16/',
             react: 'production.min',
             template: './src/index.html',
             filename: 'index.html'

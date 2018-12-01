@@ -1,4 +1,8 @@
 export abstract class AbstractEmitter implements AnimationEmitter {
 
-    abstract output(frames: FrameDef[]): string;
+    protected outputHeader(frames: FrameDef[]) {
+        return `// Auto-generated. Do not edit.`;
+    }
+
+    abstract output(frames: FrameDef[], delay: number): string;
 }
