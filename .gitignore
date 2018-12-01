@@ -62,3 +62,5 @@ typings/
 
 # Ignore build files
 build/*
+
+.header.json
