@@ -74,7 +74,7 @@ export class Frame extends React.Component<FrameProps, FrameState> {
         const height = Math.min(500, Math.max(100, Math.min(canvas.offsetHeight, canvas.offsetWidth) - (padding * 2)));
         // Match height
         const width = height;
-        this.setState({ width, height })
+        this.setState({ width, height });
     }
 
     handleClick() {

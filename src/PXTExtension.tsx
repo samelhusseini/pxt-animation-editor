@@ -79,6 +79,10 @@ export class PXTExtension extends React.Component<{}, AppState> {
                 size = 10;
                 backgroundColor = "#0183B7";
                 break;
+            default:
+                layout = 'matrix';
+                sizeX = 5;
+                sizeY = 5;
         }
 
         return (
